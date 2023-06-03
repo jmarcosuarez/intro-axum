@@ -1,3 +1,4 @@
+mod always_errors;
 mod hello_world;
 mod middleware_message;
 mod mirror_body_json;
@@ -8,6 +9,8 @@ mod path_variables;
 mod query_params;
 mod read_middleware_custom_header;
 mod set_middleware_custom_header;
+
+use always_errors::always_errors;
 use axum::{
     body::Body,
     http::Method,
@@ -61,4 +64,5 @@ pub fn create_routes() -> Router<(), Body> {
         .route("/middleware_message", get(middleware_message))
         .layer(cors) // this layer will affect all routes above (and not those below)
         .layer(Extension(shared_data)) // use a layer to wrap data and share on other routes using axum::Extension - all above will have access to this data
+        .route("/always_errors", get(always_errors))
 }
