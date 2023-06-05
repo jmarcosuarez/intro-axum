@@ -1,6 +1,8 @@
+mod data_routes;
 mod routes;
 
-use routes::create_routes;
+// use routes::create_routes;
+use data_routes::create_routes;
 use sea_orm::Database;
 
 pub async fn run(database_uri: &str) {
