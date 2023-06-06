@@ -22,7 +22,7 @@ pub async fn create_task(
         ..Default::default()
     };
 
-    let result = new_task.save(&database).await.unwrap();
+    let _result = new_task.save(&database).await.unwrap();
 
     // dbg!(result);
     Ok(())
