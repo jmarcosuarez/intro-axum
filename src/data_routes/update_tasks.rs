@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct RequestTask {
-    pub id: i32,
+    pub id: Option<i32>,
     pub priority: Option<String>,
     pub title: String,
     pub completed_at: Option<DateTimeWithTimeZone>,
