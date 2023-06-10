@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
     Extension,
 };
-use sea_orm::{sea_query::tests_cfg::Task, DatabaseConnection, EntityTrait, IntoActiveModel, Set};
+use sea_orm::{DatabaseConnection, EntityTrait, IntoActiveModel, Set};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -35,7 +35,7 @@ pub async fn delete_task(
     //     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Ok(())
-    if (query_params.soft) {
+    if query_params.soft {
         let mut task = if let Some(task) = Tasks::find_by_id(task_id)
             .one(&database)
             .await
