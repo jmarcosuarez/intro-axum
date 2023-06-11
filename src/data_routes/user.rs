@@ -5,8 +5,8 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::database::users;
 use crate::database::users::Entity as Users;
-use crate::database::{self, users};
 
 #[derive(Deserialize)]
 pub struct RequestUser {
