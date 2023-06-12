@@ -1,6 +1,3 @@
-use axum::headers::authorization::Bearer;
-use axum::headers::Authorization;
-use axum::TypedHeader;
 use axum::{http::StatusCode, Extension, Json};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
@@ -10,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::database::users;
 use crate::database::users::Entity as Users;
+use crate::database::users::Model;
 
 #[derive(Deserialize)]
 pub struct RequestUser {
@@ -76,23 +74,13 @@ pub async fn login(
 }
 
 pub async fn logout(
-    authorization: TypedHeader<Authorization<Bearer>>,
     Extension(database): Extension<DatabaseConnection>,
+    Extension(user): Extension<Model>,
 ) -> Result<(), StatusCode> {
-    // Find the user - convert it into an ActiveModel, then delete the token
-    let token = authorization.token();
-    let mut user = if let Some(user) = Users::find()
-        .filter(users::Column::Token.eq(Some(token)))
-        .one(&database)
-        .await
-        .map_err(|_err| StatusCode::INTERNAL_SERVER_ERROR)?
-    {
-        user.into_active_model()
-    } else {
-        return Err(StatusCode::UNAUTHORIZED);
-    };
+    let mut user = user.into_active_model();
 
     user.token = Set(None);
+
     user.save(&database)
         .await
         .map_err(|_err| StatusCode::INTERNAL_SERVER_ERROR)?;
