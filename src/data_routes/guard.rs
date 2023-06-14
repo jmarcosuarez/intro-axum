@@ -1,4 +1,7 @@
-use crate::database::users::{self, Entity as Users};
+use crate::{
+    database::users::{self, Entity as Users},
+    utils::jwt::is_valid,
+};
 use axum::{
     headers::{authorization::Bearer, Authorization, HeaderMapExt},
     http::{Request, StatusCode},
@@ -19,14 +22,16 @@ pub async fn guard<T>(mut request: Request<T>, next: Next<T>) -> Result<Response
         .get::<DatabaseConnection>()
         .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     let user = Users::find()
-        .filter(users::Column::Token.eq(Some(token)))
+        .filter(users::Column::Token.eq(Some(token.clone())))
         .one(database)
         .await
         .map_err(|_err| StatusCode::INTERNAL_SERVER_ERROR)?;
     let Some(user) = user else {
-        return Err(StatusCode::UNAUTHORIZED);
-
-    };
+    return Err(StatusCode::UNAUTHORIZED);
+};
+    // we could have done this before  - but we want a potential attacker to
+    // take same time for success than for failure tokens
+    is_valid(&token)?;
 
     request.extensions_mut().insert(user);
 

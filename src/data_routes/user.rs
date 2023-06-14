@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::database::users;
 use crate::database::users::Entity as Users;
 use crate::database::users::Model;
+use crate::utils::jwt::create_jwt;
 
 #[derive(Deserialize)]
 pub struct RequestUser {
@@ -25,10 +26,11 @@ pub async fn create_user(
     Extension(database): Extension<DatabaseConnection>,
     Json(request_user): Json<RequestUser>,
 ) -> Result<Json<ResponseUser>, StatusCode> {
+    let jwt = create_jwt()?;
     let new_user = users::ActiveModel {
         username: Set(request_user.username),
         password: Set(hash_password(request_user.password)?), // to be removed to a hashed password
-        token: Set(Some("jfu4hf48u4839ir9m43u5943m5i943i59435".to_owned())),
+        token: Set(Some(jwt)),
         ..Default::default()
     }
     .save(&database)
@@ -58,7 +60,7 @@ pub async fn login(
         }
 
         // do the login
-        let new_token = "d2s8fjs9dj2s2d98sjd9sd9sds".to_owned();
+        let new_token = create_jwt()?;
         let mut user = db_user.into_active_model();
 
         user.token = Set(Some(new_token));

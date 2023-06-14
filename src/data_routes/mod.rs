@@ -25,9 +25,9 @@ use user::{create_user, login, logout};
 pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
     Router::new()
         .route("/users/logout", post(logout))
+        .route("/hello_world", get(|| async { "Hello, World!" }))
         // only routes above guard will check on auth heather token in db to run
         .route_layer(middleware::from_fn(guard))
-        .route("/hello_world", get(|| async { "Hello, World!" }))
         .route("/tasks", post(create_task))
         .route("/tasks", get(get_all_tasks))
         .route("/tasks/:task_id", get(get_one_task))

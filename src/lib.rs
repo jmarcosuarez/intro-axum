@@ -1,6 +1,7 @@
 mod data_routes;
 mod database;
 // mod routes;
+mod utils;
 
 // use routes::create_routes;
 use data_routes::create_routes;
