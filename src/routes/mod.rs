@@ -37,17 +37,17 @@ use validate_with_serde::validate_with_serde;
 
 use tower_http::cors::{Any, CorsLayer};
 
-#[derive(Clone)]
+#[derive(Clone, FromRef)]
 pub struct SharedData {
     pub message: String,
 }
 
-pub fn create_routes() -> Router<(), Body> {
+pub fn create_routes() -> Router {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any);
     let shared_data = SharedData {
-        message: "Hello from shared data".to_owned(),
+        message: "Hello from shared data. I am state now".to_owned(),
     };
 
     Router::new()
@@ -68,8 +68,8 @@ pub fn create_routes() -> Router<(), Body> {
         .route("/mirror_user_agent", get(mirror_user_agent))
         .route("/mirror_custom_header", get(mirror_custom_header))
         .route("/middleware_message", get(middleware_message))
+        .with_state(shared_data) // use a layer to wrap data and share on other routes using axum::Extension - all above will have access to this data
         .layer(cors) // this layer will affect all routes above (and not those below)
-        .layer(Extension(shared_data)) // use a layer to wrap data and share on other routes using axum::Extension - all above will have access to this data
         .route("/always_errors", get(always_errors))
         .route("/returns_201", post(returns_201))
         .route("/get_json", get(get_json))

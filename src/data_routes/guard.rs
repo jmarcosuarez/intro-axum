@@ -25,7 +25,9 @@ pub async fn guard<T>(mut request: Request<T>, next: Next<T>) -> Result<Response
         .filter(users::Column::Token.eq(Some(token.clone())))
         .one(database)
         .await
-        .map_err(|err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error"))?; //err.to_string()
+        .map_err(|_err| {
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error")
+        })?; //err.to_string()
 
     let Some(user) = user else {
         return Err(AppError::new(StatusCode::UNAUTHORIZED, "You are not authorized, please log in or create an account"));

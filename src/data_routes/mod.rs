@@ -1,5 +1,4 @@
 use axum::{
-    body::Body,
     middleware,
     routing::{delete, get, patch, post, put},
     Extension, Router,
@@ -22,7 +21,7 @@ use partial_update_tasks::partial_tasks;
 use update_tasks::atomic_update;
 use user::{create_user, login, logout};
 
-pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
+pub fn create_routes(database: DatabaseConnection) -> Router {
     Router::new()
         .route("/users/logout", post(logout))
         .route("/hello_world", get(|| async { "Hello, World!" }))
