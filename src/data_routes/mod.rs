@@ -1,4 +1,5 @@
 mod create_task;
+mod custom_json_extractor;
 mod delete_task;
 mod get_tasks;
 mod guard;
@@ -13,6 +14,7 @@ use axum::{
     Router,
 };
 use create_task::create_task;
+use custom_json_extractor::custom_json_extractor;
 use delete_task::delete_task;
 use get_tasks::get_all_tasks;
 use get_tasks::get_one_task;
@@ -43,5 +45,6 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
         .route("/tasks/:task_id", delete(delete_task))
         .route("/users", post(create_user))
         .route("/users/login", post(login))
+        .route("/custom_json_extractor", post(custom_json_extractor))
         .with_state(app_state)
 }
