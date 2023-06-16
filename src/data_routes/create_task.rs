@@ -22,7 +22,7 @@ pub async fn create_task(
     Json(request_task): Json<RequestTask>,
 ) -> Result<(), StatusCode> {
     let token = authorization.token();
-    // before anything get the user with this token - bail if unauth
+    // before anything get the user with this token - bail if unauthenticated
     let user = if let Some(user) = Users::find()
         .filter(users::Column::Token.eq(Some(token)))
         .one(&database)

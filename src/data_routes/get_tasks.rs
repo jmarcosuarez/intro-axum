@@ -1,8 +1,8 @@
 use crate::database::tasks::{self, Entity as Tasks};
 use axum::{
-    extract::{Path, Query},
+    extract::{Path, Query, State},
     http::StatusCode,
-    Extension, Json,
+    Json,
 };
 use chrono::{DateTime, FixedOffset};
 use sea_orm::{ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter};
@@ -20,7 +20,7 @@ pub struct ResponseTask {
 
 pub async fn get_one_task(
     Path(task_id): Path<i32>,
-    Extension(database): Extension<DatabaseConnection>,
+    State(database): State<DatabaseConnection>,
 ) -> Result<Json<ResponseTask>, StatusCode> {
     let task = Tasks::find_by_id(task_id)
         .filter(tasks::Column::DeletedAt.is_null())
@@ -46,7 +46,7 @@ pub struct GetTasksQueryParams {
 }
 
 pub async fn get_all_tasks(
-    Extension(database): Extension<DatabaseConnection>,
+    State(database): State<DatabaseConnection>,
     Query(query_params): Query<GetTasksQueryParams>,
 ) -> Result<Json<Vec<ResponseTask>>, StatusCode> {
     let mut priority_filter = Condition::all();
